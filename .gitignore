@@ -1,0 +1,43 @@
+# Ignore system files
+*.lnk
+*.ini
+*.log
+NTUSER.*
+
+# Ignore Windows User Folders
+Desktop/
+Documents/
+Downloads/
+Music/
+Pictures/
+Videos/
+OneDrive/
+Saved Games/
+Searches/
+Contacts/
+Favorites/
+Links/
+
+# Ignore hidden user folders
+AppData/
+**/AppData/
+Local Settings/
+Application Data/
+Templates/
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+VirtualBox VMs/
+.m2/
+.nbi/
+.packettracer/
+.chocolatey/
+.config/
+
+# Ignore dependencies
+node_modules/
+vendor/
+target/
+bin/
+obj/
