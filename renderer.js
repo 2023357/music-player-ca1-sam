@@ -11,17 +11,25 @@ const trackTitle = document.getElementById('track-title');
 const progressBar = document.getElementById('progress-bar');
 const currentTimeElem = document.getElementById('current-time');
 const totalTimeElem = document.getElementById('total-time');
+const albumArt = document.getElementById('album-art');
+const canvas = document.getElementById('visualizer');
+const canvasCtx = canvas.getContext('2d');
 
 let musicList = [];
 let currentTrackIndex = -1;
 let isMuted = false;
 let isLooping = false;
 
+let audioContext;
+let analyser;
+let source;
+let dataArray;
+let animationId;
+
 function getFolderPath() {
   return document.getElementById('folder-path').innerText.replace(/^.*Folder: /, '');
 }
 
-// Selecionar pasta
 document.getElementById('select-folder').addEventListener('click', async () => {
   const folder = await window.electron.selectFolder();
   if (folder) {
@@ -30,7 +38,6 @@ document.getElementById('select-folder').addEventListener('click', async () => {
   }
 });
 
-// Carregar última pasta usada
 window.addEventListener('DOMContentLoaded', async () => {
   const lastFolder = await window.electron.getLastFolder();
   if (lastFolder) {
@@ -39,56 +46,35 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Atalhos do sistema
 window.electron.onShortcut((action) => {
   switch (action) {
-    case 'play-pause':
-      togglePlayPause();
-      break;
-    case 'next-track':
-      playTrack(currentTrackIndex + 1);
-      break;
-    case 'previous-track':
-      playTrack(currentTrackIndex - 1);
-      break;
-    case 'mute':
-      toggleMute();
-      break;
-    case 'volume-up':
-      audio.volume = Math.min(1, audio.volume + 0.1);
-      volumeControl.value = audio.volume * 10;
-      break;
-    case 'volume-down':
-      audio.volume = Math.max(0, audio.volume - 0.1);
-      volumeControl.value = audio.volume * 10;
-      break;
+    case 'play-pause': togglePlayPause(); break;
+    case 'next-track': playTrack(currentTrackIndex + 1); break;
+    case 'previous-track': playTrack(currentTrackIndex - 1); break;
+    case 'mute': toggleMute(); break;
+    case 'volume-up': audio.volume = Math.min(1, audio.volume + 0.1); volumeControl.value = audio.volume * 10; break;
+    case 'volume-down': audio.volume = Math.max(0, audio.volume - 0.1); volumeControl.value = audio.volume * 10; break;
   }
 });
 
-// Carregar músicas
 async function loadMusicFiles(folder) {
-    const list = await window.electron.getMusicFiles(folder);
-    musicList = list;
-    currentTrackIndex = 0;
-  
-    const ul = document.getElementById('music-list');
-    ul.innerHTML = '';
-  
-    list.forEach((track, i) => {
-      const li = document.createElement('li');
-      li.textContent = `${track.title} - ${track.artist} (${track.duration})`;
-      li.classList.add('track-item');
-      li.addEventListener('click', () => playTrack(i));
-      ul.appendChild(li);
-    });
-  
-    // Auto-play the first track after loading
-    if (musicList.length > 0) {
-      playTrack(0);
-    }
-  }
-  
-// Tocar faixa
+  const list = await window.electron.getMusicFiles(folder);
+  musicList = list;
+  currentTrackIndex = 0;
+  const ul = document.getElementById('music-list');
+  ul.innerHTML = '';
+
+  list.forEach((track, i) => {
+    const li = document.createElement('li');
+    li.textContent = `${track.title} - ${track.artist} (${track.duration})`;
+    li.classList.add('track-item');
+    li.addEventListener('click', () => playTrack(i));
+    ul.appendChild(li);
+  });
+
+  if (musicList.length > 0) playTrack(0);
+}
+
 function playTrack(index) {
   if (index < 0 || index >= musicList.length) return;
 
@@ -102,16 +88,17 @@ function playTrack(index) {
   audio.play();
 
   trackTitle.innerText = `${track.title} - ${track.artist} (${track.duration})`;
+ 
+
+  setupVisualizer();
 }
 
-// Formatar tempo (MM:SS)
 function formatTime(secs) {
   const min = Math.floor(secs / 60);
   const sec = Math.floor(secs % 60);
   return `${min}:${sec < 10 ? '0' + sec : sec}`;
 }
 
-// Botão Play/Pause
 function togglePlayPause() {
   audio.paused ? audio.play() : audio.pause();
 }
@@ -126,11 +113,9 @@ audio.addEventListener('pause', () => {
   playPauseBtn.innerText = '▶️';
 });
 
-// Próximo/Anterior
 nextBtn.addEventListener('click', () => playTrack(currentTrackIndex + 1));
 prevBtn.addEventListener('click', () => playTrack(currentTrackIndex - 1));
 
-// Progresso
 audio.addEventListener('timeupdate', () => {
   if (audio.duration) {
     const progress = (audio.currentTime / audio.duration) * 100;
@@ -148,7 +133,6 @@ progressBar.addEventListener('input', (e) => {
   audio.currentTime = newTime;
 });
 
-// Volume
 volumeControl.addEventListener('input', (e) => {
   audio.volume = e.target.value / 10;
 });
@@ -157,7 +141,6 @@ audio.addEventListener('volumechange', () => {
   volumeControl.value = audio.volume * 10;
 });
 
-// Mute
 function toggleMute() {
   isMuted = !isMuted;
   audio.muted = isMuted;
@@ -167,7 +150,6 @@ function toggleMute() {
 
 muteBtn.addEventListener('click', toggleMute);
 
-// Loop
 loopBtn.addEventListener('click', () => {
   isLooping = !isLooping;
   audio.loop = isLooping;
@@ -175,10 +157,14 @@ loopBtn.addEventListener('click', () => {
   loopBtn.classList.toggle('active', isLooping);
 });
 
-// Tema (dark mode)
 const themeToggle = document.createElement('button');
 themeToggle.textContent = '🌙';
 themeToggle.className = 'theme-toggle';
+themeToggle.setAttribute('tabindex', '-1'); // evita foco acidental
+
+// Evita o Enter acionar o botão
+themeToggle.addEventListener('keydown', (e) => e.stopPropagation());
+
 document.body.appendChild(themeToggle);
 
 let darkMode = false;
@@ -188,46 +174,56 @@ themeToggle.addEventListener('click', () => {
   themeToggle.textContent = darkMode ? '☀️' : '🌙';
 });
 
-// Atalhos de teclado
 window.addEventListener('keydown', (e) => {
+  if (document.activeElement === themeToggle) return; // garante que Enter não dispara no botão
   switch (e.key) {
-    case 'Enter':
-      togglePlayPause();
-      break;
-    case 'ArrowRight':
-      playTrack(currentTrackIndex + 1);
-      break;
-    case 'ArrowLeft':
-      playTrack(currentTrackIndex - 1);
-      break;
-    case 'ArrowUp':
-      e.preventDefault();
-      audio.volume = Math.min(audio.volume + 0.1, 1);
-      break;
-    case 'ArrowDown':
-      e.preventDefault();
-      audio.volume = Math.max(audio.volume - 0.1, 0);
-      break;
-    case 'm':
-    case 'M':
-      toggleMute();
-      break;
-    case 'r':
-    case 'R':
-      loopBtn.click();
-      break;
-    case 'Escape':
-      audio.pause();
-      audio.currentTime = 0;
-      break;
+    case 'Enter': togglePlayPause(); break;
+    case 'ArrowRight': playTrack(currentTrackIndex + 1); break;
+    case 'ArrowLeft': playTrack(currentTrackIndex - 1); break;
+    case 'ArrowUp': e.preventDefault(); audio.volume = Math.min(audio.volume + 0.1, 1); break;
+    case 'ArrowDown': e.preventDefault(); audio.volume = Math.max(audio.volume - 0.1, 0); break;
+    case 'm': case 'M': toggleMute(); break;
+    case 'r': case 'R': loopBtn.click(); break;
+    case 'Escape': audio.pause(); audio.currentTime = 0; break;
   }
 });
+
 audio.addEventListener('ended', () => {
-    // Se estiver na última música e não em loop, volta para a primeira
-    if (currentTrackIndex < musicList.length - 1) {
-      playTrack(currentTrackIndex + 1);
-    } else if (!isLooping) {
-      playTrack(0); // reinicia do começo
+  if (currentTrackIndex < musicList.length - 1) {
+    playTrack(currentTrackIndex + 1);
+  } else if (!isLooping) {
+    playTrack(0);
+  }
+});
+
+function setupVisualizer() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    source = audioContext.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+  }
+
+  function draw() {
+    animationId = requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(dataArray);
+
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+    const barWidth = (canvas.width / dataArray.length) * 2.5;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < dataArray.length; i++) {
+      barHeight = dataArray[i];
+      canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,150)';
+      canvasCtx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
+      x += barWidth + 1;
     }
-  });
-  
+  }
+
+  draw();
+}
