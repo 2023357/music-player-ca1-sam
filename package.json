@@ -2,20 +2,56 @@
   "name": "music-player",
   "version": "1.0.0",
   "main": "main.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "electron": "^35.2.0"
+  "build": {
+    "appId": "com.yourdomain.musicplayer",
+    "productName": "Music Player",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "mini-player.html",
+      "mini-player.js",
+      "index.html",
+      "styles.css",
+      "images/**/*",
+      "locales/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "images",
+        "to": "images"
+      }
+    ],
+    "mac": {
+      "target": "dmg",
+      "icon": "images/final_player_icon.icns"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "images/final_player_icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "images"
+    }
   },
   "dependencies": {
-    "electron-store": "^10.0.1",
-    "fs": "^0.0.1-security",
-    "music-metadata": "^11.2.1",
-    "path": "^0.12.7"
+    "chokidar": "^4.0.3",
+    "electron-store": "^8.1.0",
+    "music-metadata": "^7.14.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.12"
   }
 }

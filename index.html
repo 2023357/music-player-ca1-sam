@@ -6,37 +6,75 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <button id="select-folder">Selecionar Pasta de Músicas</button>
-  <p id="folder-path">Nenhuma pasta selecionada</p>
+  <!-- ☰ Sidebar open button -->
+  <button id="menu-button" title="Abrir menu lateral" aria-label="Abrir menu">☰</button>
 
-  <h2>Lista de Músicas:</h2>
-  <ul id="music-list"></ul>
+  <!-- Sidebar menu -->
+  <aside id="sidebar">
+    <button id="close-sidebar" title="Fechar menu lateral" aria-label="Fechar menu">✖</button>
+    <h3>Opções</h3>
+    <button id="select-folder">📁 Selecionar pasta</button>
+    <button id="theme-toggle-sidebar">🌗 Alternar Tema</button>
+    <button id="show-all">🎵 Todas as músicas</button>
+    <button id="show-favorites">❤️ Favoritas</button>
+    <button id="show-library">📚 Biblioteca</button>
+    <button id="refresh-library">🔄 Atualizar Biblioteca</button>
+    <label for="lang-selector">🌐 Idioma</label>
+    <select id="lang-selector">
+      <option value="pt">🇧🇷 Português</option>
+      <option value="en">🇺🇸 English</option>
+      <option value="es">🇪🇸 Español</option>
+      <option value="fr">🇫🇷 Français</option>
+    </select>
+  </aside>
 
-  <h2>Player</h2>
-  <div id="player-controls">
-    <div id="music-controls">
-      <button id="prev-btn">⏪</button>
-      <button id="play-pause-btn">▶️</button>
-      <button id="next-btn">⏩</button>
+  <!-- Conteúdo principal -->
+  <main id="main-content">
+    <div id="folder-path" data-i18n-folder></div>
+
+    <!-- 🎧 Imagem e faixa -->
+    <div id="artist-container">
+      <div id="vinyl-wrapper">
+        <img id="artist-image" src="images/default-artist.png" alt="Imagem do artista" />
+        <div id="vinyl-center"></div>
+      </div>
+      
+      <div id="track-title">
+        <span id="track-name">Nome da música</span>
+        <button id="favorite-current" class="fav-btn" title="Favoritar faixa">⭐</button>
+      </div>
     </div>
 
-    <div id="track-display">
-      <span id="track-title">Nenhuma faixa tocando</span>
+    <!-- 🎵 Controles do player -->
+    <div id="player-controls">
+      <div id="music-controls">
+        <button class="btn" id="prev-btn" title="Faixa anterior">⏪</button>
+        <button class="btn" id="play-pause-btn" title="Reproduzir/Pausar">▶️</button>
+        <button class="btn" id="next-btn" title="Próxima faixa">⏩</button>
+        <button class="btn" id="shuffle-btn" title="Embaralhar">🔀</button>
+        <button class="btn" id="loop-btn" title="Repetir">🔁</button>
+        <button class="btn" id="mute-btn" title="Mudo/Ativar som">🔊</button>
+      </div>
+
+      <div id="time-display">
+        <span id="current-time">0:00</span>
+        <input type="range" id="progress-bar" value="0" max="100" step="0.1" />
+        <span id="total-time">0:00</span>
+      </div>
+
+      <div id="extra-controls">
+        <input type="range" id="volume-control" value="10" max="10" />
+      </div>
     </div>
 
-    <div id="time-display">
-      <span id="current-time">0:00</span>
-      <input type="range" id="progress-bar" value="0" max="100" step="0.1" />
-      <span id="total-time">0:00</span>
-    </div>
+    <!-- 🎼 Lista de músicas -->
+    <section id="music-section" class="modal-list">
+      <h3>Lista de músicas</h3>
+      <ul id="music-list"></ul>
+    </section>
+  </main>
 
-    <div id="extra-controls">
-      <input type="range" id="volume-control" value="10" max="10" />
-      <button id="mute-btn">🔊</button>
-      <button id="loop-btn">🔁</button>
-    </div>
-  </div>
-
+  <!-- 🎶 Audio e visualizer -->
   <audio id="audio-player" controls style="display:none;"></audio>
   <canvas id="visualizer" width="300" height="100"></canvas>
 

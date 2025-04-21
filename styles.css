@@ -1,179 +1,149 @@
-/* 🌞 Light Mode (padrão) */
+/* 🌞 Light Mode */
 body {
   margin: 0;
-  padding: 0;
+  padding: 60px 20px;
   font-family: 'Segoe UI', sans-serif;
   background-color: #f4f4f4;
   color: #111;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  text-align: center;
+  box-sizing: border-box;
+  gap: 2rem;
+}
+#artist-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 3rem 0; /* espaço acima e abaixo */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem; /* mais espaço entre vinil e título */
 }
 
+
+
+#vinyl-wrapper {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#artist-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 8px solid #333;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  transition: opacity 0.8s ease-in-out;
+  opacity: 0;
+  box-sizing: border-box;
+}
+
+#artist-image.visible {
+  opacity: 1;
+}
+
+#vinyl-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  background-color: #111;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
+  z-index: 2;
+}
+
+#vinyl-wrapper.rotate {
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 🎵 Track title */
+#track-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: inherit;
+  padding-bottom: 10px;
+}
+
+/* 🎛 Buttons */
 button {
-  padding: 20px 16px;
-  font-size: 1.2rem;
-  border: none;
-  background-color: #2196f3;
-  color: white;
+  padding: 10px 16px;
+  font-size: 1rem;
+  background-color: white;
+  color: black;
+  border: 2px solid black;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s;
+  transition: background 0.3s ease, transform 0.2s, box-shadow 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 button:hover {
-  background-color: #1976d2;
+  background-color: #5164e4;
   transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 button.active {
-  background-color: #4caf50; /* verde quando ativo */
+  background-color: #4caf50;
   color: white;
+  border-color: #4caf50;
 }
 
+/* 🎚 Sliders */
 input[type="range"] {
   width: 100%;
   max-width: 400px;
+  height: 4px;
+  appearance: none;
 }
 
-/* Controles principais */
 #player-controls {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 600px;
-  gap: 1rem;
-  padding: 1rem;
+  margin-top: 2rem; /* afasta o painel do título da música */
 }
 
-/* Lista de músicas */
-ul#music-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 200px;
-  overflow-y: auto;
-  width: 100%;
-  max-width: 600px;
-}
 
-ul#music-list li {
-  cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-  transition: background 0.2s;
-}
 
-ul#music-list li:hover {
-  background-color: #e0e0e0;
-}
-
-/* Botão de tema */
-.theme-toggle {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  font-size: 1.4rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: inherit;
-}
-
-/* 🔁 Dark Mode */
-body.dark-mode {
-  background-color: #121212;
-  color: #ffffff;
-}
-
-body.dark-mode button {
-  background-color: #1f1f1f;
-  color: white;
-  border: 1px solid #333;
-}
-
-body.dark-mode button:hover {
-  background-color: #333;
-}
-
-body.dark-mode ul#music-list li:hover {
-  background-color: #333;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-  #player-controls {
-    padding: 0.5rem;
-  }
-
-  button {
-    font-size: 1rem;
-    padding: 8px 12px;
-  }
-
-  ul#music-list li {
-    font-size: 0.9rem;
-  }
-}
-/* Alinhar botões de controle de música */
 #music-controls {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-}
-
-/* Centraliza o botão "Selecionar Pasta" */
-#select-folder {
-  display: block;
-  margin: 2rem auto 1rem auto;
-  font-size: 1.1rem;
-  background-color: #673ab7;
-  padding: 10px 20px;
-  border-radius: 8px;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-#select-folder:hover {
-  background-color: #5e35b1;
-}
-#player-controls {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  max-width: 600px;
-  width: 100%;
-  padding: 1rem;
-}
-
-/* Controles principais (⏪ ▶️ ⏩) */
-#music-controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 #music-controls button {
+  width: 60px;
+  height: 60px;
   font-size: 1.5rem;
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  box-sizing: border-box;
 }
 
-/* Faixa atual */
-#track-display {
-  text-align: center;
-  font-weight: bold;
-  font-size: 1rem;
-}
-
-/* Tempo + progresso */
+/* ⏱ Time Display */
 #time-display {
   display: flex;
   align-items: center;
@@ -187,7 +157,7 @@ body.dark-mode ul#music-list li:hover {
   flex-grow: 1;
 }
 
-/* Volume, mute e loop agrupados */
+/* 🔊 Extra Controls */
 #extra-controls {
   display: flex;
   align-items: center;
@@ -199,25 +169,134 @@ body.dark-mode ul#music-list li:hover {
   width: 100px;
 }
 
-button {
-  background-color: #2196f3;
+/* 📊 Visualizer */
+#visualizer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  opacity: 0.3;
+  pointer-events: none;
+  display: block;
+}
+
+/* 🎨 Sidebar */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 240px;
+  height: 100%;
+  background-color: #222;
   color: white;
+  padding: 1rem;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#sidebar.open {
+  left: 0;
+}
+
+#menu-button {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  font-size: 1.4rem;
+  z-index: 1001;
+  background: none;
   border: none;
-  padding: 10px;
-  border-radius: 8px;
+  color: #2196f3;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
-button:hover {
+#close-sidebar {
+  align-self: flex-end;
+  background: none;
+  color: white;
+  font-size: 1.3rem;
+}
+
+/* 🎵 Music List (Sidebar) */
+#music-section {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 1rem;
+}
+
+#music-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#music-list li {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  transition: background 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#music-list li:hover {
+  background-color: #e0e0e0;
+}
+
+/* ⭐ Favorite Button */
+.fav-btn {
+  background: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.fav-btn.active {
+  color: gold;
+}
+
+/* 🌗 Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+body.dark-mode button {
+  background-color: #1f1f1f;
+  border: 2px solid #888;
+  color: #fff;
+}
+
+body.dark-mode button:hover {
+  background-color: #333;
+}
+
+body.dark-mode button.active {
   background-color: #1976d2;
+  border-color: #1976d2;
+  color: white;
 }
 
-button.active {
-  background-color: #4caf50;
+body.dark-mode #music-list li:hover {
+  background-color: #333;
 }
 
-input[type="range"] {
-  height: 4px;
-  appearance: none;
+.theme-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: inherit;
 }
