@@ -1,16 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Music Player App</title>
+  <meta charset="UTF-8" />
+  <title>Music Player</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <button id="select-folder">Select Music Folder</button>
-    <p id="folder-path">No folder selected</p>
+  <button id="select-folder">Selecionar Pasta de Músicas</button>
+  <p id="folder-path">Nenhuma pasta selecionada</p>
 
-    <h2>Music Files:</h2>
-    <ul id="music-list"></ul>
+  <h2>Lista de Músicas:</h2>
+  <ul id="music-list"></ul>
 
-    <script src="renderer.js"></script>
+  <h2>Player</h2>
+  <div id="player-controls">
+    <div id="music-controls">
+    <button id="prev-btn">⏪</button>
+    <button id="play-pause-btn">▶️</button>
+    <button id="next-btn">⏩</button>
+    </div>
+    <div id="track-display">
+    <span id="track-title">Nenhuma faixa tocando</span>
+    </div>
+    <div id="time-display">
+        <span id="current-time">0:00</span>
+        <input type="range" id="progress-bar" value="0" max="100" step="0.1" />
+        <span id="total-time">0:00</span>
+      </div>
+
+    
+    
+  <div id="extra-controls">
+    <input type="range" id="volume-control" value="10" max="10" />
+    <button id="mute-btn">🔊</button>
+    <button id="loop-btn">🔁</button>
+  </div>
+
+
+  <audio id="audio-player" controls style="display:none;"></audio>
+
+  <script src="renderer.js"></script>
 </body>
 </html>

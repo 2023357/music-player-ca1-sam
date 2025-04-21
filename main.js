@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, globalShortcut, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const Store = require('electron-store').default;
@@ -11,6 +11,9 @@ app.whenReady().then(() => {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
+        minWidth: 400, // <- prevent it from getting too small
+        minHeight: 300,
+        resizable: true,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
@@ -20,11 +23,45 @@ app.whenReady().then(() => {
     });
 
     mainWindow.loadFile('index.html');
+    // GLOBAL SHORTCUTS
+    globalShortcut.register('CommandOrControl+Right', () => {
+        mainWindow.webContents.send('global-shortcut', 'next-track');
+      });
+      
+      globalShortcut.register('CommandOrControl+Left', () => {
+        mainWindow.webContents.send('global-shortcut', 'previous-track');
+      });
+      
+      globalShortcut.register('CommandOrControl+M', () => {
+        mainWindow.webContents.send('global-shortcut', 'mute');
+      });
+      
+      globalShortcut.register('CommandOrControl+Up', () => {
+        mainWindow.webContents.send('global-shortcut', 'volume-up');
+      });
+      
+      globalShortcut.register('CommandOrControl+Down', () => {
+        mainWindow.webContents.send('global-shortcut', 'volume-down');
+      });
+      
+      globalShortcut.register('CommandOrControl+Space', () => {
+        mainWindow.webContents.send('global-shortcut', 'play-pause');
+      });
+      
+    
+      app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+      });
+      app.on('will-quit', () => {
+        globalShortcut.unregisterAll();
+      });
+    });
 
     app.on('window-all-closed', () => {
         if (process.platform !== 'darwin') app.quit();
     });
-});
+
+
 
 // Select folder
 ipcMain.handle('select-folder', async () => {
