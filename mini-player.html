@@ -1,11 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Player</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+   body {
+  width: 360px;
+  height: 250px;
+  max-width: 360px;
+  max-height: 250px;
+  min-width: 360px;
+  min-height: 250px;
+  margin: 0;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(to bottom right, #1e1e2f, #2b2c3c);
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  user-select: none;
+  -webkit-app-region: drag;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-app-region: drag;
+}
+
+#drag-region {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.btns {
+  display: flex;
+  gap: 6px;
+}
+
+.header-btn {
+  background: #2a2a2a;
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  transition: background 0.3s ease;
+}
+
+.header-btn:hover {
+  background: #e74c3c;
+}
+
+#track-info {
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 0 0.6rem;
+  max-width: 100%;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #90caf9;
+  -webkit-app-region: no-drag;
+  word-break: break-word;
+}
+
+#vinyl-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 12px rgba(74, 108, 247, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#artist-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #222;
+}
+
+.rotate {
+  animation: spin 5s linear infinite;
+}
+
+#vinyl-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background-color: #121212;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.6rem;
+}
+
+#controls button {
+  width: 38px;
+  height: 38px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  background-color: #292929;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+  -webkit-app-region: no-drag;
+}
+
+#controls button:hover {
+  background-color: #4a6cf7;
+  transform: scale(1.08);
+}
+html, body {
+  height: auto;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+  </style>
+</head>
 <body>
-    <img id="mini-image" src="images/default-artist.png" alt="Artista" style="max-height: 60px; border-radius: 8px; margin-bottom: 0.5rem;" />
-    <div id="mini-controls">
-      <button id="mini-prev">⏪</button>
-      <button id="mini-play">▶️</button>
-      <button id="mini-next">⏩</button>
-      <button id="mini-shuffle">🔀</button>
+  <div id="header">
+    <div id="drag-region">Mini Player <span style="font-size: 0.7rem; opacity: 0.6;">(Ctrl+Shift+M)</span></div>
+    <div class="btns">
+      <button class="header-btn" id="minimize-btn">🗕</button>
+      <button class="header-btn" id="close-btn">✖️</button>
     </div>
-    <script src="mini-player.js"></script>
-  </body>
+  </div>
+
+  <div id="track-info">No track being played</div>
+
+  <div id="vinyl-wrapper">
+    <img id="artist-image" src="images/default-artist.png" alt="Artist" />
+    <div id="vinyl-center"></div>
+  </div>
+
+  <div id="controls">
+    <button id="prev"><i data-lucide="skip-back"></i></button>
+    <button id="play"><i data-lucide="play"></i></button>
+    <button id="next"><i data-lucide="skip-forward"></i></button>
+  </div>  
+
+  <script src="mini-player.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
   
+</body>
+</html>
+

@@ -1,0 +1,385 @@
+#  Electron Music Player – Technical README
+Authors: Silmara Souto (2023357), Arthur Costa (2023301), Mariana Oliveira (2023167)
+
+This application is a cross-platform desktop music player built using Electron.js. It was developed as part of a software development assignment to explore file system integration, asynchronous programming, desktop GUI design, and real-world collaborative coding practices.
+##  Setup and Installation
+Requirements
+Node.js (v16 or higher): Download Node.js
+
+npm (included with Node.js)
+
+To verify your installation:
+
+node -v
+npm -v
+Install Dependencies
+Navigate to your project directory and run:
+
+npm install electron@35.0.0 \
+             chokidar@4.0.3 \
+             electron-store@8.1.0 \
+             music-metadata@7.14.0 \
+             sound-play@1.1.0 \
+             node-fetch@3.3.2 \
+             i18next \
+             electron-builder --save-dev
+
+Run the Application
+To launch the app in development mode:
+
+npm start
+Build the Installer (Electron Builder)
+To generate distributable installers for Windows/Linux/macOS:
+
+npm run dist
+After completion, check the dist/ folder in your project root for the output files.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ Project Structure
+
+ music-player/
+├── main.js               # Electron main process
+├── preload.js            # Secure context bridge
+├── renderer.js           # Player logic + DOM
+├── mini-player.js        # Mini player logic
+├── index.html            # Main player UI
+├── mini-player.html      # Compact UI
+├── styles.css            # Unified CSS
+├── locales/              # JSON language files
+├── images/               # App icons + fallback image
+└── package.json          # Project config
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+## Interface Overview
+
+- Dynamic folder scan and audio playback
+
+- Manual folder selection
+
+- Spotify API integration for artist images
+
+- Full playback controls: Play, Pause, Skip, Shuffle, Loop, Volume
+
+- Favourite system (persistent with electron-store)
+
+- Theme toggle (Dark/Light Mode)
+
+- Multilingual support (PT, EN, ES, FR)
+
+- Visualizer (powered by Web Audio API)
+
+- Auto library scan on start-up
+
+- Mini Player (remote control)
+
+- System Tray integration
+
+- Keyboard shortcuts (global + contextual)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Menu Options
+
+* **📁 Select Folder:** Choose music folder manually.
+* **🔁 Refresh Library:** Clears cache and rescans the current folder.
+* **🎵 All Songs / Favourites / Library:** Filters view based on selection.
+* **🌐 Language Selector:** Dynamically loads interface translations (i18next).
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Favourites System
+
+Click the heart icon to mark a song as favorite
+
+Stored locally using electron-store
+
+Persisted across app restarts
+
+Accessible via sidebar (Favorites tab)
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+** Language Support
+This app supports 4 languages:
+
+🇧🇷 Portuguese (pt.json)
+
+🇺🇸 English (en.json)
+
+🇪🇸 Spanish (es.json)
+
+🇫🇷 French (fr.json)
+
+The entire interface updates instantly based on selection.
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## System Tray Integration
+The app integrates with the system tray (Windows/Linux) for lightweight background control:
+
+## Features:
+Minimize to Tray: When the main window is minimized, the app stays active in the system tray instead of quitting.
+
+Right-Click Tray Menu with the following options:
+
+Show Main Player: Reopens the full player window.
+
+Show Mini Player: Opens the floating mini player window.
+
+Play/Pause
+
+Next Track
+
+Previous Track
+
+Quit Application
+
+--- Technical Implementation:
+Implemented using Electron’s Tray and Menu modules.
+
+Tray icon dynamically loaded and resized using nativeImage.
+
+Menu actions emit IPC messages to the main player using:
+
+mainWindow.webContents.send('tray-control', 'play-pause');
+
+Custom icon (icon.png) designed to match the app’s identity.
+
+Tray menu ensures the music can be controlled even when all windows are hidden.
+
+This was a key usability feature, especially for users who want to keep music running in the background without cluttering their desktop.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+**** Spotify API Integration
+The app connects to the Spotify Web API to fetch high-quality artist images in real-time.
+
+Auth handled via client_credentials flow
+
+Fallback to local image if artist is unknown or not found
+
+All requests are cached briefly to reduce rate limits
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+##  Mini Player
+The mini player uses its own window and listens for playback updates via IPC:
+
+Reacts to play/pause/skip actions
+
+Updates the current track info and artist image
+
+Keeps the spinning vinyl animation in sync
+
+Can be toggled with a global shortcut (Ctrl+Shift+M)
+
+Stays always on top, does not appear in taskbar
+
+Preload isolation was essential to allow this behavior without compromising the main process or exposing unsafe APIs.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--- Controls & Shortcuts
+Action	Keyboard Shortcut
+Play/Pause	Enter / Ctrl + Space
+Next Track	→ / Ctrl + →
+Previous Track	← / Ctrl + ←
+Volume Up/Down	↑ / ↓ or Ctrl + ↑ / ↓
+Mute	M / Ctrl + M
+Toggle Shuffle	S
+Toggle Loop	R
+Minimize All	Escape
+Open Mini Player	Ctrl + Shift + M
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+**** Data Persistence 
+This application uses electron-store to persist user preferences across sessions. No manual configuration is required.
+
+The following data is automatically saved and reloaded:
+
+Theme preference (light or dark)
+
+Last folder selected (auto-loaded on start-up)
+
+List of favourite tracks
+
+Shuffle and loop mode states
+
+Last track played (title, path, image)
+
+Auto-scanned library results from safe folders
+
+You do not need to reconfigure the player each time it launches. Preferences are stored locally in JSON and restored automatically, making the experience seamless and consistent.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+**** Error Handling (How the App Prevents Crashes)
+The player includes multiple safety checks to handle common edge cases and corrupted files gracefully:
+
+Audio & Metadata:
+Unsupported audio formats (e.g. .aac, .flac) are skipped automatically.
+
+Files with missing metadata will still play; the filename is shown instead of the track title.
+
+If music-metadata fails, the app falls back to default values (e.g. "Unknown Artist" and "00:00").
+
+Folder Safety:
+System directories like node_modules, AppData, or $Recycle.Bin are excluded from recursive folder scanning.
+
+The app verifies the selected folder exists (fs.existsSync) before loading.
+
+Playback:
+If a track fails to load, the player alerts the user and attempts to play the next available track.
+
+Files that are deleted while playing are detected in real-time and removed from the list using chokidar or fs.watch.
+
+Window Communication:
+
+All communication between the main and mini player windows is validated:
+
+The app checks whether windows are ready or not destroyed before sending IPC messages.
+
+This prevents crashes due to sending events to closed or non-existent windows.
+
+These mechanisms ensure that the application remains stable and usable, even in unexpected situations or on systems with limited permissions.
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Dependencies Explained
+
+Dependencies Explained (What Each Package Does)
+Below is a breakdown of the external dependencies used in the project and how each contributes to the system’s functionality:
+
+Dependency	Purpose & Usage
+electron	Base framework for building cross-platform desktop apps using JavaScript, HTML, and CSS.
+chokidar	Provides real-time file system watching. Used to monitor music folders for added/removed tracks.
+electron-store	Handles persistent storage for theme settings, favourites, last folder, and more.
+music-metadata	Extracts metadata (title, artist, duration) from .mp3, .wav, and .ogg files.
+sound-play	Optional dependency for quick sound previews (can be removed if not used in final version).
+node-fetch	Used to perform HTTP requests (e.g., retrieving artist images via Spotify API).
+i18next	Internationalization engine for dynamic multi-language support (English, Portuguese, Spanish, French).
+electron-builder	Bundles and compiles the app into executable installers for Windows, Linux, and macOS.
+
+Install all packages using:
+
+npm install
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+*** Troubleshooting & Improvements
+ Issue: Main window disappears after minimizing
+Problem: Minimizing the app made the window vanish without a clear way to restore it.
+Cause: mainWindow.hide() was used without reassigning restore logic.
+
+Fix:
+mainWindow.on('minimize', () => {
+  createMiniPlayer();
+});
+
+ Issue: Music continues after closing all windows
+Problem: App did not fully close when all windows were shut.
+Cause: app.quit() was never triggered manually.
+
+Fix:
+mainWindow.on('closed', () => app.quit());
+miniPlayerWindow.on('closed', () => app.quit());
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+###  Interface & Layout Fixes
+
+* Fixed progress bar alignment with long song titles.
+* Resolved shortcut conflict from favorite button (`.blur()` after click).
+* Added close button to hide music list manually.
+* Prevented layout issues from long titles (used `overflow: hidden; text-overflow: ellipsis`).
+
+###  View Logic
+
+* Added `manualViewActive` state to preserve user's current view (Favorites, Library).
+* Prevented `playTrack()` from overriding user-selected views.
+
+### Keyboard Shortcut Fixes
+
+* Restored Enter shortcut functionality after UI interactions.
+* Disabled global hotkeys within `<input>`, `<select>`, and `<textarea>` elements.
+
+### Technical Challenges & Solutions
+
+* Renderer unable to use `require()` → implemented `contextBridge`.
+* Browser path issues → used `file://` and slash correction.
+* Theme toggle focus bug → added `tabindex=-1`.
+* Accidentally tracked node\_modules → corrected with `.gitignore`.
+* Electron-builder demanded CommonJS or ES modules → fixed by changing the code to CommonJS
+
+### Troubleshooting
+
+* EPERM Windows permission errors resolved.
+* Window disappearance issue on minimize fixed by handling `mainWindow.on('closed')`.
+* Long titles breaking layout addressed with `overflow: hidden; text-overflow: ellipsis`.
+* Playback view preserved by introducing `manualViewActive` state.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Testing Methodology (Playwright)
+
+Automated testing covered:
+
+1. Offline functionality
+2. Large-scale track loading stability
+3. Consistent audio playback
+4. Auto-library scanning correctness
+5. Memory stability on reload
+6. Long playback memory leak checks
+7. Graceful handling of protected folders
+8. Mini player stability under stress tests
+9. Reconnected-behaviour to check Spotify reconnection
+10. language change tests
+11. battery-drain test
+12. Spotify-API communication speed
+13. Corrupted file test
+14. stress test with random button clicking
+15. long track test to check memory leak
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Future Improvements
+
+* Create/save custom playlists
+
+* Add equalizer options
+
+* FLAC/AAC format support
+
+* Lyrics integration
+
+* Track search/filter
+
+* Streaming support (e.g., radio)
+
+* Drag & drop functionality
+
+* Realtime sync across multiple devices
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ Reflections on the Development Process
+
+Building the Electron Music Player was a complex and rewarding journey that exposed us to the full software development lifecycle—from planning and UI design to debugging inter-process communication. A major challenge was ensuring smooth communication between the main and renderer processes. Early on, the mini player would crash or fail to update. We resolved this using contextBridge, validated IPC channels, and careful window state checks, which helped us understand Electron's architecture more deeply.
+
+Version control became a bottleneck. Although we had a GitHub repository, we often defaulted to informal code sharing via WhatsApp, which caused version divergence and merge conflicts. In the end, we manually compared multiple versions and consolidated the most stable features, learning the importance of structured collaboration with proper branching and pull requests.
+
+Another recurring issue was overlapping changes: one teammate's new feature would unintentionally break another's. These setbacks taught us to write modular, isolated code and communicate task boundaries more clearly. Bugs caused by missing awaits or poor async handling also reinforced the need for careful attention to JavaScript execution flow.
+
+Despite these challenges, our teamwork remained strong. We constantly helped each other troubleshoot, sharing solutions and keeping morale high. We introduced technical safeguards like library caching, fallback images, and folder validation to make the app feel polished and reliable. Every problem we faced led to a better understanding of Electron security, async logic, and desktop app design.
+
+This project was more than a technical exercise—it showed us how to debug under pressure, work around real limitations, and grow as a team. We leave this experience with stronger coding skills and a deeper appreciation for collaborative development.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+## Credits & Team Acknowledgment
+
+This project was developed collaboratively by a small team of three students passionate about learning programming languages and building functional desktop applications from scratch.

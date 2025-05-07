@@ -4,22 +4,53 @@
   <meta charset="UTF-8" />
   <title>Music Player</title>
   <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+  <!--(Lucide) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
-  <!-- ☰ Sidebar open button -->
-  <button id="menu-button" title="Abrir menu lateral" aria-label="Abrir menu">☰</button>
+  <!-- ☰ Top-left menu button to open sidebar -->
+  <button id="menu-button" title="open side menu" aria-label="open menu">
+    <i data-lucide="menu"></i>
+  </button>
 
-  <!-- Sidebar menu -->
+  <!-- Sidebar with app controls  -->
   <aside id="sidebar">
-    <button id="close-sidebar" title="Fechar menu lateral" aria-label="Fechar menu">✖</button>
-    <h3>Opções</h3>
-    <button id="select-folder">📁 Selecionar pasta</button>
-    <button id="theme-toggle-sidebar">🌗 Alternar Tema</button>
-    <button id="show-all">🎵 Todas as músicas</button>
-    <button id="show-favorites">❤️ Favoritas</button>
-    <button id="show-library">📚 Biblioteca</button>
-    <button id="refresh-library">🔄 Atualizar Biblioteca</button>
-    <label for="lang-selector">🌐 Idioma</label>
+    <button id="close-sidebar" title="close side menu" aria-label="close menu">
+      <i data-lucide="x"></i>
+    </button>
+     <!-- Section title -->
+    <h3 data-i18n="options">Opções</h3>
+      <!-- Select music folder -->
+
+    <button id="select-folder" data-i18n="select_folder">
+      <i data-lucide="folder-open"></i> Selecionar pasta
+    </button>
+
+     <!-- Toggle dark/light mode (in sidebar) -->
+    <button id="theme-toggle-sidebar" data-i18n="toggle_theme">
+      <i data-lucide="moon"></i> Alternar Tema
+    </button>
+
+     <!-- Filter music list -->
+    <button id="show-all" data-i18n="all_songs">
+      <i data-lucide="music"></i> Todas as músicas
+    </button>
+    <button id="show-favorites" data-i18n="favorites">
+      <i data-lucide="heart"></i> Favoritas
+    </button>
+    <button id="show-library" data-i18n="library">
+      <i data-lucide="library"></i> Biblioteca
+    </button>
+    <button id="refresh-library" data-i18n="refresh_library">
+      <i data-lucide="refresh-ccw"></i> Atualizar Biblioteca
+    </button>
+      <!-- Language selector -->
+    <label for="lang-selector" data-i18n="language">
+      <i data-lucide="globe"></i> Idioma
+    </label>
     <select id="lang-selector">
       <option value="pt">🇧🇷 Português</option>
       <option value="en">🇺🇸 English</option>
@@ -28,56 +59,83 @@
     </select>
   </aside>
 
-  <!-- Conteúdo principal -->
+  <!--Main content -->
   <main id="main-content">
+
+    <!-- Shows the name of the currently loaded folder -->
     <div id="folder-path" data-i18n-folder></div>
 
-    <!-- 🎧 Imagem e faixa -->
+    <!-- Artist image and currently playing track title-->
     <div id="artist-container">
       <div id="vinyl-wrapper">
-        <img id="artist-image" src="images/default-artist.png" alt="Imagem do artista" />
+        <img id="artist-image" src="images/default-artist.png" alt="artist image" />
         <div id="vinyl-center"></div>
       </div>
-      
+
       <div id="track-title">
-        <span id="track-name">Nome da música</span>
-        <button id="favorite-current" class="fav-btn" title="Favoritar faixa">⭐</button>
+        <div class="info">
+          <span id="track-name">Track name - Artist (00:00)</span>
+           <!-- Button to favorite the current track -->
+          <button class="fav-btn" id="favorite-current" title="set track as favorite">
+            <i data-lucide="heart"></i>
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- 🎵 Controles do player -->
+    <!-- player controls -->
     <div id="player-controls">
       <div id="music-controls">
-        <button class="btn" id="prev-btn" title="Faixa anterior">⏪</button>
-        <button class="btn" id="play-pause-btn" title="Reproduzir/Pausar">▶️</button>
-        <button class="btn" id="next-btn" title="Próxima faixa">⏩</button>
-        <button class="btn" id="shuffle-btn" title="Embaralhar">🔀</button>
-        <button class="btn" id="loop-btn" title="Repetir">🔁</button>
-        <button class="btn" id="mute-btn" title="Mudo/Ativar som">🔊</button>
+         <!-- Previous, play/pause, next, shuffle, repeat, mute buttons -->
+        <button class="btn" id="prev-btn" title="previous track"><i data-lucide="skip-back"></i></button>
+        <button class="btn" id="play-pause-btn" title="play/pause"><i data-lucide="play"></i></button>
+        <button class="btn" id="next-btn" title="bext track"><i data-lucide="skip-forward"></i></button>
+        <button class="btn" id="shuffle-btn" title="shuffle"><i data-lucide="shuffle"></i></button>
+        <button class="btn" id="loop-btn" title="Repete"><i data-lucide="repeat"></i></button>
+        <button class="btn" id="mute-btn" title="Mute/activate sound"><i data-lucide="volume-2"></i></button>
       </div>
 
+       <!-- Track progress display and seek bar -->
       <div id="time-display">
         <span id="current-time">0:00</span>
         <input type="range" id="progress-bar" value="0" max="100" step="0.1" />
         <span id="total-time">0:00</span>
       </div>
 
+      <!-- volume slider -->
       <div id="extra-controls">
         <input type="range" id="volume-control" value="10" max="10" />
       </div>
     </div>
 
-    <!-- 🎼 Lista de músicas -->
-    <section id="music-section" class="modal-list">
-      <h3>Lista de músicas</h3>
-      <ul id="music-list"></ul>
+     <!-- Modal music list that shows when a playlist is opened -->
+    <section id="music-section" class="modal-list" style="display: none;">
+
+      <button id="close-list" title="Close List">
+        <i data-lucide="x"></i>
+      </button>      
+
+      <div id="music-grid" class="music-grid">
+        <!-- Music tracks will be injected here by renderer.js -->
+      </div>
     </section>
   </main>
 
-  <!-- 🎶 Audio e visualizer -->
+  <!--Hidden audio element used for playback -->
   <audio id="audio-player" controls style="display:none;"></audio>
+
+   <!-- Canvas element for the music visualizer -->
   <canvas id="visualizer" width="300" height="100"></canvas>
 
+ <!-- Main renderer script -->
   <script src="renderer.js"></script>
+
+<!-- Initializes all lucide icons on the page -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    lucide.createIcons();
+  });
+</script>
+
 </body>
 </html>

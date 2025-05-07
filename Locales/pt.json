@@ -1,13 +1,14 @@
 {
-    "all_songs": "Todas as músicas",
-    "favorites": "Favoritas",
-    "library": "Biblioteca Automática",
-    "refresh_library": "Atualizar Biblioteca",
-    "track_none": "Nenhuma faixa tocando",
-    "play": "Tocar",
-    "pause": "Pausar",
-    "select_folder": "Selecionar pasta de música",
-    "current_folder": "Biblioteca atual"
-
-  }
-  
+  "all_songs": "Todas as músicas",
+  "favorites": "Favoritas",
+  "library": "Biblioteca Automática",
+  "refresh_library": "Atualizar Biblioteca",
+  "track_none": "Nenhuma faixa tocando",
+  "play": "Tocar",
+  "pause": "Pausar",
+  "select_folder": "Selecionar pasta de música",
+  "current_folder": "Biblioteca atual",
+  "options": "Opções",
+  "toggle_theme": "Alternar Tema",
+  "language": "Idioma"
+}

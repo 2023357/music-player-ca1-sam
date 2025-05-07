@@ -1,14 +1,11 @@
 {
-    "all_songs": "All Songs",
-    "favorites": "Favorites",
-    "library": "Auto Library",
-    "refresh_library": "Refresh Library",
-    "track_none": "No track playing",
-    "play": "Play",
-    "pause": "Pause",
-    "select_folder": "Select Music Folder",
-    "current_folder": "Current library"
-
-
-  }
-  
+  "all_songs": "All Songs",
+  "favorites": "Favorites",
+  "library": "Library",
+  "select_folder": "Select Folder",
+  "toggle_theme": "Toggle Theme",
+  "refresh_library": "Refresh Library",
+  "language": "Language",
+  "options": "Options",
+  "current_folder": "Current Folder"
+}

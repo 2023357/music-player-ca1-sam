@@ -7,7 +7,9 @@
     "play": "Reproducir",
     "pause": "Pausar",
     "select_folder": "Seleccionar carpeta de música",
-     "current_folder": "Biblioteca actual"
-
+    "current_folder": "Biblioteca actual",
+    "options": "Opciones",
+    "toggle_theme": "Cambiar tema",
+    "language": "Idioma"
   }
   

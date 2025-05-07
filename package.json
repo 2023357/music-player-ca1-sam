@@ -48,7 +48,8 @@
     "chokidar": "^4.0.3",
     "electron-store": "^8.1.0",
     "music-metadata": "^7.14.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "sound-play": "^1.1.0"
   },
   "devDependencies": {
     "electron": "^35.0.0",

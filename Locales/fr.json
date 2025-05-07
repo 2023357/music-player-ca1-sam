@@ -1,13 +1,16 @@
 {
-    "all_songs": "Toutes les chansons",
-    "favorites": "Favoris",
-    "library": "Bibliothèque automatique",
-    "refresh_library": "Actualiser la bibliothèque",
-    "track_none": "Aucune piste en cours de lecture",
-    "play": "Lire",
-    "pause": "Pause",
-    "select_folder": "Sélectionner un dossier de musique",
-    "current_folder": "Bibliothèque actuelle"
+  "all_songs": "Toutes les chansons",
+  "favorites": "Favoris",
+  "library": "Bibliothèque automatique",
+  "refresh_library": "Actualiser la bibliothèque",
+  "track_none": "Aucune piste en cours de lecture",
+  "play": "Lire",
+  "pause": "Pause",
+  "select_folder": "Sélectionner un dossier de musique",
+  "current_folder": "Bibliothèque actuelle",
+  "options": "Options",
+  "toggle_theme": "Changer de thème",
+  "language": "Langue"
+}
 
-  }
   
